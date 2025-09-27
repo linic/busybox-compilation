@@ -53,6 +53,15 @@ fi
 
 mkdir -p ./release/$BUSYBOX_VERSION/
 sudo docker compose --progress=plain -f docker-compose.edit-config.yml up --detach
+
+BUSYBOX_PACKAGE_NAME="busybox-$BUSYBOX_VERSION"
+COMPILATION_DIRECTORY=/home/tc/busybox
+CONFIGURATION_DIRECTORY=$COMPILATION_DIRECTORY/configuration
+RELEASE_DIRECTORY=$COMPILATION_DIRECTORY/release
+BUSYBOX_SOURCES_DIRECTORY=$COMPILATION_DIRECTORY/$BUSYBOX_PACKAGE_NAME
+sudo docker exec -it busybox-compilation-main-1 cd $BUSYBOX_SOURCES_DIRECTORY && cp $CONFIGURATION_DIRECTORY/config-suid .config && make oldconfig && make menuconfig && cp .config $CONFIGURATION_DIRECTORY/config-suid
+sudo docker exec -it busybox-compilation-main-1 cd $BUSYBOX_SOURCES_DIRECTORY && cp $CONFIGURATION_DIRECTORY/config-nosuid .config && make oldconfig && make menuconfig && cp .config $CONFIGURATION_DIRECTORY/config-nosuid
+
 sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-suid  ./release/$BUSYBOX_VERSION/config-suid
 sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-nosuid  ./release/$BUSYBOX_VERSION/config-nosuid
 sudo docker compose --progress=plain -f docker-compose.edit-config.yml down

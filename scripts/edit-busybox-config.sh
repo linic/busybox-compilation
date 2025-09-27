@@ -33,14 +33,3 @@ patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_modprobe.patch
 patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_tc_depmod.patch
 patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.36.1-check-lxdialog.patch
 
-# Edit the config for the first compilation with suid
-cp $CONFIGURATION_DIRECTORY/config-suid .config
-make oldconfig
-make menuconfig
-cp .config $CONFIGURATION_DIRECTORY/config-suid
-
-# Edit the config for the second compilation with nosuid
-cp $CONFIGURATION_DIRECTORY/config-nosuid .config
-make oldconfig
-make menuconfig
-cp .config $CONFIGURATION_DIRECTORY/config-nosuid
