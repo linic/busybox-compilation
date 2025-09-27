@@ -4,10 +4,12 @@ services:
       context: .
       args:
         - ARCHITECTURE=x86
-        - RUST_VERSION=1.90.0
+        - BUSYBOX_VERSION=1.36.1
+        - MARCH=i686
+        - MTUNE=i686
         - TCL_VERSION=16.x
       tags:
-        - linichotmailca/rust-i586:1.90.0
-        - linichotmailca/rust-i586:latest
-      dockerfile: Dockerfile
+        - linichotmailca/busybox-compilation:1.36.1-edit
+        - linichotmailca/busybox-compilation:latest-edit
+      dockerfile: Dockerfile.edit-config
 

@@ -9,6 +9,7 @@
 # Edit the compilation configuration for BusyBox.                 #
 # This is an alternate build which has less features than the     #
 # official BusyBox shipped with Tiny Core Linux.                  #
+# This script relies on download-busybox.sh being called first.   #
 ###################################################################
 
 set -e
@@ -23,13 +24,14 @@ BUSYBOX_PACKAGE_NAME="busybox-$BUSYBOX_VERSION"
 COMPILATION_DIRECTORY=/home/tc/busybox
 CONFIGURATION_DIRECTORY=$COMPILATION_DIRECTORY/configuration
 RELEASE_DIRECTORY=$COMPILATION_DIRECTORY/release
+BUSYBOX_SOURCES_DIRECTORY=$COMPILATION_DIRECTORY/$BUSYBOX_PACKAGE_NAME
+cd $BUSYBOX_SOURCES_DIRECTORY
 
-mkdir -pv $COMPILATION_DIRECTORY
-cd $COMPILATION_DIRECTORY
-
-curl --remote-name https://busybox.net/downloads/$BUSYBOX_PACKAGE_NAME.tar.bz2
-bzip2 --decompress --keep $BUSYBOX_PACKAGE_NAME.tar.bz2
-tar x -f $BUSYBOX_PACKAGE_NAME.tar
+patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.27.1-wget-make-default-timeout-configurable.patch
+patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.29.3_root_path.patch
+patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_modprobe.patch
+patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_tc_depmod.patch
+patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.36.1-check-lxdialog.patch
 
 # Edit the config for the first compilation with suid
 cp $CONFIGURATION_DIRECTORY/config-suid .config
@@ -38,7 +40,7 @@ make menuconfig
 cp .config $CONFIGURATION_DIRECTORY/config-suid
 
 # Edit the config for the second compilation with nosuid
-cp /home/tc/${BUSYBOX_PACKAGE_NAME}_config_nosuid .config
+cp $CONFIGURATION_DIRECTORY/config-nosuid .config
 make oldconfig
 make menuconfig
-cp .config /home/tc/${BUSYBOX_PACKAGE_NAME}_config_nosuid
+cp .config $CONFIGURATION_DIRECTORY/config-nosuid

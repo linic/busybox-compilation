@@ -39,9 +39,9 @@ if [ ! -f docker-compose.edit-config.yml ] || ! grep -q "$ARCHITECTURE" docker-c
     "       - MTUNE=$MTUNE\n"\
     "       - TCL_VERSION=$TCL_VERSION\n"\
     "     tags:\n"\
-    "       - linichotmailca/busybox-compilation:$BUSYBOX_VERSION\n"\
-    "       - linichotmailca/busybox-compilation:latest\n"\
-    "     dockerfile: Dockerfile\n" > docker-compose.edit-config.yml
+    "       - linichotmailca/busybox-compilation:$BUSYBOX_VERSION-edit\n"\
+    "       - linichotmailca/busybox-compilation:latest-edit\n"\
+    "     dockerfile: Dockerfile.edit-config\n" > docker-compose.edit-config.yml
 fi
 
 if sudo docker compose --progress=plain -f docker-compose.edit-config.yml build; then

@@ -27,7 +27,7 @@ mkdir -pv $COMPILATION_DIRECTORY
 cd $COMPILATION_DIRECTORY
 
 curl --remote-name https://busybox.net/downloads/$BUSYBOX_PACKAGE_NAME.tar.bz2
-bzip2 --decompress --keep $BUSYBOX_PACKAGE_NAME.tar.bz2
+bzip2 -d -k $BUSYBOX_PACKAGE_NAME.tar.bz2
 tar x -f $BUSYBOX_PACKAGE_NAME.tar
 cd $BUSYBOX_PACKAGE_NAME
 
