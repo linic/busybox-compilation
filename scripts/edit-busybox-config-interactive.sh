@@ -24,13 +24,7 @@ COMPILATION_DIRECTORY=/home/tc/busybox
 CONFIGURATION_DIRECTORY=$COMPILATION_DIRECTORY/configuration
 RELEASE_DIRECTORY=$COMPILATION_DIRECTORY/release
 BUSYBOX_SOURCES_DIRECTORY=$COMPILATION_DIRECTORY/$BUSYBOX_PACKAGE_NAME
+
 cd $BUSYBOX_SOURCES_DIRECTORY
-
-patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.27.1-wget-make-default-timeout-configurable.patch
-patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.29.3_root_path.patch
-patch -Np1 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_modprobe.patch
-patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.33.0_tc_depmod.patch
-patch -Np0 -i $COMPILATION_DIRECTORY/patches/busybox-1.36.1-check-lxdialog.patch
-
-cp $CONFIGURATION_DIRECTORY/config-$CONFIG_TYPE .config
-make oldconfig
+make menuconfig
+cp .config $CONFIGURATION_DIRECTORY/config-$CONFIG_TYPE

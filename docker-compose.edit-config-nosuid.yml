@@ -1,0 +1,16 @@
+services:
+  main:
+    build:
+      context: .
+      args:
+        - ARCHITECTURE=x86
+        - BUSYBOX_VERSION=1.36.1
+        - CONFIG_TYPE=nosuid
+        - MARCH=i686
+        - MTUNE=i686
+        - TCL_VERSION=16.x
+      tags:
+        - linichotmailca/busybox-compilation:1.36.1-edit
+        - linichotmailca/busybox-compilation:latest-edit
+      dockerfile: Dockerfile.edit-config
+

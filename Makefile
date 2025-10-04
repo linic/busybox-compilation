@@ -5,10 +5,13 @@ MARCH="i686"
 MTUNE="i686"
 TCL_VERSION=16.x
 
-all: edit compile
+all: edit-suid edit-nosuid compile
 
-edit:
-	scripts/edit-config.sh ${ARCHITECTURE} ${BUSYBOX_VERSION} ${MARCH} ${MTUNE} ${TCL_VERSION}
+edit-suid:
+	scripts/edit-config.sh ${ARCHITECTURE} ${BUSYBOX_VERSION} suid ${MARCH} ${MTUNE} ${TCL_VERSION}
+
+edit-nosuid:
+	scripts/edit-config.sh ${ARCHITECTURE} ${BUSYBOX_VERSION} nosuid ${MARCH} ${MTUNE} ${TCL_VERSION}
 
 compile:
 	scripts/compile.sh ${ARCHITECTURE} ${BUSYBOX_VERSION} ${MARCH} ${MTUNE} ${TCL_VERSION}

@@ -11,8 +11,8 @@
 
 CONFIGURATION_DIRECTORY=/home/tc/busybox/configuration
 
-PARAMETER_ERROR_MESSAGE="ARCHITECTURE BUSYBOX_VERSION MARCH MTUNE TCL_VERSION are required. For example: ./edit-config.sh x86 1.36.1 i686 i686 16.x"
-if [ ! $# -eq 5 ]; then
+PARAMETER_ERROR_MESSAGE="ARCHITECTURE BUSYBOX_VERSION MARCH MTUNE TCL_VERSION CONFIG_TYPE are required. For example: ./edit-config.sh x86 1.36.1 suid i686 i686 16.x"
+if [ ! $# -eq 6 ]; then
   echo $PARAMETER_ERROR_MESSAGE
   exit 1
 fi
@@ -22,12 +22,13 @@ if [ $ARCHITECTURE != "x86" ]; then
   exit 2
 fi
 BUSYBOX_VERSION=$2
-MARCH=$3
-MTUNE=$4
-TCL_VERSION=$5
+CONFIG_TYPE=$3
+MARCH=$4
+MTUNE=$5
+TCL_VERSION=$6
 
-if [ ! -f docker-compose.edit-config.yml ] || ! grep -q "$ARCHITECTURE" docker-compose.edit-config.yml || ! grep -q "$BUSYBOX_VERSION" docker-compose.edit-config.yml || ! grep -q "$MARCH" docker-compose.edit-config.yml || ! grep -q "$MTUNE" docker-compose.edit-config.yml || ! grep -q "$TCL_VERSION" docker-compose.edit-config.yml; then
-  echo "Did not find $ARCHITECTURE, $BUSYBOX_VERSION, $MARCH, $MTUNE or $TCL_VERSION in docker-compose.edit-config.yml. Rewriting docker-compose.edit-config.yml."
+if [ ! -f docker-compose.edit-config-$CONFIG_TYPE.yml ] || ! grep -q "$ARCHITECTURE" docker-compose.edit-config-$CONFIG_TYPE.yml || ! grep -q "$BUSYBOX_VERSION" docker-compose.edit-config-$CONFIG_TYPE.yml || ! grep -q "$CONFIG_TYPE" docker-compose.edit-config-$CONFIG_TYPE.yml || ! grep -q "$MARCH" docker-compose.edit-config-$CONFIG_TYPE.yml || ! grep -q "$MTUNE" docker-compose.edit-config-$CONFIG_TYPE.yml || ! grep -q "$TCL_VERSION" docker-compose.edit-config-$CONFIG_TYPE.yml; then
+  echo "Did not find $ARCHITECTURE, $BUSYBOX_VERSION, $MARCH, $MTUNE or $TCL_VERSION in docker-compose.edit-config-$CONFIG_TYPE.yml. Rewriting docker-compose.edit-config-$CONFIG_TYPE.yml."
   echo "services:\n"\
     " main:\n"\
     "   build:\n"\
@@ -35,16 +36,17 @@ if [ ! -f docker-compose.edit-config.yml ] || ! grep -q "$ARCHITECTURE" docker-c
     "     args:\n"\
     "       - ARCHITECTURE=$ARCHITECTURE\n"\
     "       - BUSYBOX_VERSION=$BUSYBOX_VERSION\n"\
+    "       - CONFIG_TYPE=$CONFIG_TYPE\n"\
     "       - MARCH=$MARCH\n"\
     "       - MTUNE=$MTUNE\n"\
     "       - TCL_VERSION=$TCL_VERSION\n"\
     "     tags:\n"\
     "       - linichotmailca/busybox-compilation:$BUSYBOX_VERSION-edit\n"\
     "       - linichotmailca/busybox-compilation:latest-edit\n"\
-    "     dockerfile: Dockerfile.edit-config\n" > docker-compose.edit-config.yml
+    "     dockerfile: Dockerfile.edit-config\n" > docker-compose.edit-config-$CONFIG_TYPE.yml
 fi
 
-if sudo docker compose --progress=plain -f docker-compose.edit-config.yml build; then
+if sudo docker compose --progress=plain -f docker-compose.edit-config-$CONFIG_TYPE.yml build; then
   echo "Build succeeded."
 else
   echo "Build failed!"
@@ -52,16 +54,15 @@ else
 fi
 
 mkdir -p ./release/$BUSYBOX_VERSION/
-sudo docker compose --progress=plain -f docker-compose.edit-config.yml up --detach
+sudo docker compose --progress=plain -f docker-compose.edit-config-$CONFIG_TYPE.yml up --detach
 
 BUSYBOX_PACKAGE_NAME="busybox-$BUSYBOX_VERSION"
 COMPILATION_DIRECTORY=/home/tc/busybox
 CONFIGURATION_DIRECTORY=$COMPILATION_DIRECTORY/configuration
 RELEASE_DIRECTORY=$COMPILATION_DIRECTORY/release
 BUSYBOX_SOURCES_DIRECTORY=$COMPILATION_DIRECTORY/$BUSYBOX_PACKAGE_NAME
-sudo docker exec -it busybox-compilation-main-1 cd $BUSYBOX_SOURCES_DIRECTORY && cp $CONFIGURATION_DIRECTORY/config-suid .config && make oldconfig && make menuconfig && cp .config $CONFIGURATION_DIRECTORY/config-suid
-sudo docker exec -it busybox-compilation-main-1 cd $BUSYBOX_SOURCES_DIRECTORY && cp $CONFIGURATION_DIRECTORY/config-nosuid .config && make oldconfig && make menuconfig && cp .config $CONFIGURATION_DIRECTORY/config-nosuid
+sudo docker exec -it busybox-compilation-main-1 $COMPILATION_DIRECTORY/scripts/edit-busybox-config-interactive.sh $BUSYBOX_VERSION $CONFIG_TYPE
 
-sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-suid  ./release/$BUSYBOX_VERSION/config-suid
-sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-nosuid  ./release/$BUSYBOX_VERSION/config-nosuid
-sudo docker compose --progress=plain -f docker-compose.edit-config.yml down
+sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-$CONFIG_TYPE  ./release/$BUSYBOX_VERSION/config-$CONFIG_TYPE
+sudo docker cp busybox-compilation-main-1:$CONFIGURATION_DIRECTORY/config-$CONFIG_TYPE  ./configuration/config-$CONFIG_TYPE
+sudo docker compose --progress=plain -f docker-compose.edit-config-$CONFIG_TYPE.yml down

@@ -1,10 +1,12 @@
 ARG ARCHITECTURE
 ARG BUSYBOX_VERSION
+ARG CONFIG_TYPE
 ARG MARCH
 ARG MTUNE
 ARG TCL_VERSION
 FROM linichotmailca/tcl-core-x86:$TCL_VERSION-$ARCHITECTURE
 ARG BUSYBOX_VERSION
+ARG CONFIG_TYPE
 ARG MARCH
 ARG MTUNE
 WORKDIR /home/tc/busybox/
@@ -18,7 +20,8 @@ COPY --chown=tc:staff patches /home/tc/busybox/patches
 COPY --chown=tc:staff scripts/download-busybox.sh /home/tc/busybox/scripts/
 RUN /home/tc/busybox/scripts/download-busybox.sh $BUSYBOX_VERSION $MARCH $MTUNE
 COPY --chown=tc:staff scripts/edit-busybox-config.sh /home/tc/busybox/scripts/
-RUN /home/tc/busybox/scripts/edit-busybox-config.sh $BUSYBOX_VERSION $MARCH $MTUNE
+RUN /home/tc/busybox/scripts/edit-busybox-config.sh $BUSYBOX_VERSION $CONFIG_TYPE
+COPY --chown=tc:staff scripts/edit-busybox-config-interactive.sh /home/tc/busybox/scripts/
 COPY --chown=tc:staff scripts/echo_sleep.sh /home/tc/busybox/scripts/
 ENTRYPOINT ["/bin/sh", "/home/tc/busybox/scripts/echo_sleep.sh"]
 

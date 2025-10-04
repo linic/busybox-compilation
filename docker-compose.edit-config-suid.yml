@@ -5,6 +5,7 @@ services:
       args:
         - ARCHITECTURE=x86
         - BUSYBOX_VERSION=1.36.1
+        - CONFIG_TYPE=suid
         - MARCH=i686
         - MTUNE=i686
         - TCL_VERSION=16.x
