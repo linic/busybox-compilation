@@ -46,7 +46,7 @@ make CC="gcc -flto -march=$MARCH -mtune=$MTUNE -Os -pipe" CXX="g++ -flto -march=
 touch $BUSYBOX_PACKAGE_NAME.candidates.files
 find / -not -type 'd' -cnewer $BUSYBOX_PACKAGE_NAME.time-marker | grep -v "\/proc\/" | grep -v "^\/sys\/" | tee -a $BUSYBOX_PACKAGE_NAME.candidates.files
 
-if [ $CONFIG_TYPE -eq "suid" ]; then
+if [ $CONFIG_TYPE = "suid" ]; then
   mv $RELEASE_DIRECTORY/bin/busybox $RELEASE_DIRECTORY/busybox.suid
   echo "Making busybox binary setuid root"
   chmod u+s $RELEASE_DIRECTORY/busybox.suid
