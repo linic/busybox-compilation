@@ -11,7 +11,7 @@
 
 CONFIGURATION_DIRECTORY=/home/tc/busybox/configuration
 
-PARAMETER_ERROR_MESSAGE="ARCHITECTURE BUSYBOX_VERSION MARCH MTUNE TCL_VERSION CONFIG_TYPE are required. For example: ./edit-config.sh x86 1.36.1 suid i686 i686 16.x"
+PARAMETER_ERROR_MESSAGE="ARCHITECTURE BUSYBOX_VERSION CONFIG_TYPE MARCH MTUNE TCL_VERSION are required. For example: ./edit-config.sh x86 1.36.1 suid i686 i686 16.x"
 if [ ! $# -eq 6 ]; then
   echo $PARAMETER_ERROR_MESSAGE
   exit 1
@@ -41,8 +41,8 @@ if [ ! -f docker-compose.edit-config-$CONFIG_TYPE.yml ] || ! grep -q "$ARCHITECT
     "       - MTUNE=$MTUNE\n"\
     "       - TCL_VERSION=$TCL_VERSION\n"\
     "     tags:\n"\
-    "       - linichotmailca/busybox-compilation:$BUSYBOX_VERSION-edit\n"\
-    "       - linichotmailca/busybox-compilation:latest-edit\n"\
+    "       - linichotmailca/busybox-compilation:$BUSYBOX_VERSION-edit-$CONFIG_TYPE\n"\
+    "       - linichotmailca/busybox-compilation:latest-edit-$CONFIG_TYPE\n"\
     "     dockerfile: Dockerfile.edit-config\n" > docker-compose.edit-config-$CONFIG_TYPE.yml
 fi
 
